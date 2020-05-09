@@ -8,14 +8,6 @@
   align-items: center;
 }
 
-.fighter-preview___right {
-  /* align-items: flex-end; */
-}
-
-.fighter-preview___left {
-  /* align-items: flex-start; */
-}
-
 .fighter-preview___name {
   width: 100%;
   text-align: center;
