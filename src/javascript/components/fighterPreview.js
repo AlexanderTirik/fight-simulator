@@ -23,6 +23,8 @@ export function createFighterPreview(fighter, position) {
       className: 'fighter-preview___img',
     });
     fighterImg.src = fighter.source;
+    if (position == "right")
+      fighterImg.style.transform = "scale(-1, 1)"
 
     const fighterDesc = createElement({
       tagName: 'div',
