@@ -11,3 +11,30 @@
 .fighter-preview___left {
   align-items: flex-start;
 }
+
+.fighter-preview___name{
+  width: 100%;
+  text-align: center;
+  color:#21568F;
+  font-weight: bolder;
+  font-size: 30px;
+  margin: 10px;
+}
+
+.fighter-preview___img{
+  height: 66%;
+}
+
+.fighter-preview___description{
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.fighter-preview___data{
+  color: #21568F;
+  font-size: larger;
+  font-weight: bold;
+}
