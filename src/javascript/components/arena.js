@@ -1,23 +1,29 @@
 import { createElement } from '../helpers/domHelper';
 import { createFighterImage } from './fighterPreview';
+import { fight } from './fight';
+import { showWinnerModal } from './modal/winner';
 
-export function renderArena(selectedFighters) {
+export async function renderArena(selectedFighters) {
   const root = document.getElementById('root');
   const arena = createArena(selectedFighters);
 
   root.innerHTML = '';
   root.append(arena);
-
-  // todo:
-  // - start the fight
-  // - when fight is finished show winner
+  
+  try {
+    const [firstFighter, secondFighter] = selectedFighters;
+    const winner = await fight(firstFighter, secondFighter);
+    showWinnerModal(winner);
+  } catch (error) {
+    throw error;
+  }
+  
 }
 
 function createArena(selectedFighters) {
   const arena = createElement({ tagName: 'div', className: 'arena___root' });
   const healthIndicators = createHealthIndicators(...selectedFighters);
   const fighters = createFighters(...selectedFighters);
-  
   arena.append(healthIndicators, fighters);
   return arena;
 }
@@ -37,7 +43,11 @@ function createHealthIndicator(fighter, position) {
   const container = createElement({ tagName: 'div', className: 'arena___fighter-indicator' });
   const fighterName = createElement({ tagName: 'span', className: 'arena___fighter-name' });
   const indicator = createElement({ tagName: 'div', className: 'arena___health-indicator' });
-  const bar = createElement({ tagName: 'div', className: 'arena___health-bar', attributes: { id: `${position}-fighter-indicator` }});
+  const bar = createElement({
+    tagName: 'div',
+    className: 'arena___health-bar',
+    attributes: { id: `${position}-fighter-indicator` },
+  });
 
   fighterName.innerText = name;
   indicator.append(bar);
