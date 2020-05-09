@@ -6,10 +6,14 @@
 
 .fighter-preview___right {
   align-items: flex-end;
+  display: flex;
+  align-items: center;
 }
 
 .fighter-preview___left {
   align-items: flex-start;
+  display: flex;
+  align-items: center;
 }
 
 .fighter-preview___name{
