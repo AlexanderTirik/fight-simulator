@@ -11,6 +11,8 @@ export async function fight(firstFighter, secondFighter) {
     const secondHealth = secondFighter.health;
 
     document.addEventListener('keydown', function (event) {
+      pressed.add(event.code);
+
       // First attack
       if (
         event.code === controls.PlayerOneAttack &&
@@ -19,7 +21,6 @@ export async function fight(firstFighter, secondFighter) {
         !event.repeat
       ) {
         Hit(firstFighter, secondFighter, secondHealth, secondHealthBar);
-        if (secondFighter.health <= 0) resolve(firstFighter);
       }
 
       // Second attack
@@ -30,26 +31,22 @@ export async function fight(firstFighter, secondFighter) {
         !event.repeat
       ) {
         Hit(secondFighter, firstFighter, firstHealth, firstHealthBar);
-        if (firstFighter.health <= 0) resolve(secondFighter);
       }
 
-      // First block
-      if (event.code === controls.PlayerOneBlock && !event.repeat) {
-        pressed.add(event.code);
+      if (controls.PlayerOneCriticalHitCombination.every((code) => pressed.has(code))) {
+        Hit(firstFighter, secondFighter, secondHealth, secondHealthBar, true);
       }
 
-      // Second block
-      if (event.code === controls.PlayerTwoBlock && !event.repeat) {
-        pressed.add(event.code);
+      if (controls.PlayerTwoCriticalHitCombination.every((code) => pressed.has(code))) {
+        Hit(secondFighter, firstFighter, firstHealth, firstHealthBar, true);
       }
 
-      // // First crit
-      // if (event.code === controls.)
+      if (secondFighter.health <= 0) resolve(firstFighter);
+      if (firstFighter.health <= 0) resolve(secondFighter);
     });
+
     document.addEventListener('keyup', function (event) {
-      if (event.code === controls.PlayerOneBlock || event.code === controls.PlayerTwoBlock) {
-        pressed.delete(event.code);
-      }
+      pressed.delete(event.code);
     });
   });
 }
@@ -73,8 +70,12 @@ export function getBlockPower(fighter) {
   return power;
 }
 
-export function Hit(attacker, defender, fullHealth, healthBar) {
-  defender.health -= getDamage(attacker, defender);
+export function Hit(attacker, defender, fullHealth, healthBar, isCrit = false) {
+  if (isCrit) {
+    defender.health -= attacker.attack * 2;
+  } else {
+    defender.health -= getDamage(attacker, defender);
+  }
   const percentHealth = defender.health > 0 ? Math.floor((defender.health / fullHealth) * 100) : 0;
   healthBar.style.width = `${percentHealth}%`;
 }
