@@ -8,9 +8,6 @@ export function createFighterPreview(fighter, position) {
   });
 
   if (fighter) {
-    fighterElement.style.height = '400px';
-    fighterElement.style.backgroundColor = '#FFE387';
-    fighterElement.style.border = '6px solid #FFCA6E';
 
     const fighterName = createElement({
       tagName: 'div',
