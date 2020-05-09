@@ -8,20 +8,15 @@ export function createFighterPreview(fighter, position) {
   });
 
   if (fighter) {
-
     const fighterName = createElement({
       tagName: 'div',
       className: 'fighter-preview___name',
     });
     fighterName.innerText = fighter.name;
 
-    const fighterImg = createElement({
-      tagName: 'img',
-      className: 'fighter-preview___img',
-    });
-    fighterImg.src = fighter.source;
-    if (position == "right")
-      fighterImg.style.transform = "scale(-1, 1)"
+    const fighterImg = createFighterImage(fighter);
+
+    if (position == 'right') fighterImg.style.transform = 'scale(-1, 1)';
 
     const fighterDesc = createElement({
       tagName: 'div',
