@@ -1,14 +1,12 @@
 import { controls } from '../../constants/controls';
+import { fighters } from '../helpers/mockData';
 
 export async function fight(firstFighter, secondFighter) {
   return new Promise((resolve) => {
     let pressed = new Set();
 
-    const firstHealthBar = document.getElementById('left-fighter-indicator');
-    const secondHealthBar = document.getElementById('right-fighter-indicator');
-
-    const firstHealth = firstFighter.health;
-    const secondHealth = secondFighter.health;
+    const leftFighter = createCombatFighter(firstFighter, "left")
+    const rightFighter = createCombatFighter(secondFighter, "right")
 
     document.addEventListener('keydown', function (event) {
       pressed.add(event.code);
@@ -20,7 +18,7 @@ export async function fight(firstFighter, secondFighter) {
         !pressed.has(controls.PlayerTwoBlock) &&
         !event.repeat
       ) {
-        Hit(firstFighter, secondFighter, secondHealth, secondHealthBar);
+        Hit(leftFighter, rightFighter);
       }
 
       // Second attack
@@ -30,19 +28,19 @@ export async function fight(firstFighter, secondFighter) {
         !pressed.has(controls.PlayerOneBlock) &&
         !event.repeat
       ) {
-        Hit(secondFighter, firstFighter, firstHealth, firstHealthBar);
+        Hit(rightFighter, leftFighter);
       }
 
       if (controls.PlayerOneCriticalHitCombination.every((code) => pressed.has(code))) {
-        Hit(firstFighter, secondFighter, secondHealth, secondHealthBar, true);
+        Hit(leftFighter, rightFighter, true);
       }
 
       if (controls.PlayerTwoCriticalHitCombination.every((code) => pressed.has(code))) {
-        Hit(secondFighter, firstFighter, firstHealth, firstHealthBar, true);
+        Hit(rightFighter, leftFighter, true);
       }
 
-      if (secondFighter.health <= 0) resolve(firstFighter);
-      if (firstFighter.health <= 0) resolve(secondFighter);
+      if (rightFighter.health <= 0) resolve(firstFighter);
+      if (leftFighter.health <= 0) resolve(secondFighter);
     });
 
     document.addEventListener('keyup', function (event) {
@@ -70,12 +68,22 @@ export function getBlockPower(fighter) {
   return power;
 }
 
-export function Hit(attacker, defender, fullHealth, healthBar, isCrit = false) {
+export function Hit(attacker, defender, isCrit = false) {
   if (isCrit) {
     defender.health -= attacker.attack * 2;
+    
   } else {
     defender.health -= getDamage(attacker, defender);
   }
-  const percentHealth = defender.health > 0 ? Math.floor((defender.health / fullHealth) * 100) : 0;
-  healthBar.style.width = `${percentHealth}%`;
+  const percentHealth = defender.health > 0 ? Math.floor((defender.health / defender.fullHealth) * 100) : 0;
+  defender.healthBar.style.width = `${percentHealth}%`;
+}
+
+export function createCombatFighter(fighter, position){
+  return {
+    ...fighter,
+    fullHealth: fighter.health,
+    cooldownCrit: new Date(),
+    healthBar: document.getElementById(`${position}-fighter-indicator`)
+  }
 }
