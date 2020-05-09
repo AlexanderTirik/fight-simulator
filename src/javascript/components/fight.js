@@ -5,11 +5,11 @@ export async function fight(firstFighter, secondFighter) {
   return new Promise((resolve) => {
     let pressed = new Set();
 
-    const leftFighter = createCombatFighter(firstFighter, "left")
-    const rightFighter = createCombatFighter(secondFighter, "right")
+    const leftFighter = createCombatFighter(firstFighter, 'left');
+    const rightFighter = createCombatFighter(secondFighter, 'right');
 
     document.addEventListener('keydown', function (event) {
-      pressed.add(event.code);
+      if (!event.repat) pressed.add(event.code);
 
       // First attack
       if (
@@ -32,11 +32,17 @@ export async function fight(firstFighter, secondFighter) {
       }
 
       if (controls.PlayerOneCriticalHitCombination.every((code) => pressed.has(code))) {
-        Hit(leftFighter, rightFighter, true);
+        const resultCrit = Hit(leftFighter, rightFighter, true);
+        if (!resultCrit) {
+          controls.PlayerOneCriticalHitCombination.forEach((code) => pressed.delete(code));
+        }
       }
 
       if (controls.PlayerTwoCriticalHitCombination.every((code) => pressed.has(code))) {
-        Hit(rightFighter, leftFighter, true);
+        const resultCrit = Hit(rightFighter, leftFighter, true);
+        if (!resultCrit) {
+          controls.PlayerTwoCriticalHitCombination.forEach((code) => pressed.delete(code));
+        }
       }
 
       if (rightFighter.health <= 0) resolve(firstFighter);
@@ -70,20 +76,26 @@ export function getBlockPower(fighter) {
 
 export function Hit(attacker, defender, isCrit = false) {
   if (isCrit) {
-    defender.health -= attacker.attack * 2;
-    
+    const dateNow = new Date();
+    if (dateNow - attacker.coolDownCrit > 10000) {
+      defender.health -= attacker.attack * 2;
+      attacker.coolDownCrit = dateNow;
+    } else {
+      return false;
+    }
   } else {
     defender.health -= getDamage(attacker, defender);
   }
   const percentHealth = defender.health > 0 ? Math.floor((defender.health / defender.fullHealth) * 100) : 0;
   defender.healthBar.style.width = `${percentHealth}%`;
+  return true;
 }
 
-export function createCombatFighter(fighter, position){
+export function createCombatFighter(fighter, position) {
   return {
     ...fighter,
     fullHealth: fighter.health,
-    cooldownCrit: new Date(),
-    healthBar: document.getElementById(`${position}-fighter-indicator`)
-  }
+    coolDownCrit: new Date(),
+    healthBar: document.getElementById(`${position}-fighter-indicator`),
+  };
 }
