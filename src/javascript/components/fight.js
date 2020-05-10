@@ -8,7 +8,7 @@ export async function fight(firstFighter, secondFighter) {
     const leftFighter = createCombatFighter(firstFighter, 'left');
     const rightFighter = createCombatFighter(secondFighter, 'right');
 
-    document.addEventListener('keydown', function (event) {
+    function keyDown(event) {
       if (!event.repat) pressed.add(event.code);
 
       // First attack
@@ -45,13 +45,28 @@ export async function fight(firstFighter, secondFighter) {
         }
       }
 
-      if (rightFighter.health <= 0) resolve(firstFighter);
-      if (leftFighter.health <= 0) resolve(secondFighter);
-    });
+      if (rightFighter.health <= 0) {
+        Win(firstFighter);
+      }
+      if (leftFighter.health <= 0) {
+        Win(secondFighter);
+      }
+    }
 
-    document.addEventListener('keyup', function (event) {
+    document.addEventListener('keydown', keyDown);
+
+    function keyUp(event) {
       pressed.delete(event.code);
-    });
+    }
+
+    document.addEventListener('keyup', keyUp);
+
+    function Win(winner) {
+      document.removeEventListener('keydown', keyDown);
+      document.removeEventListener('keyup', keyUp);
+
+      resolve(winner);
+    }
   });
 }
 
