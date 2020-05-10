@@ -95,7 +95,7 @@ export function createCombatFighter(fighter, position) {
   return {
     ...fighter,
     fullHealth: fighter.health,
-    coolDownCrit: new Date(),
+    coolDownCrit: new Date() - 11000,
     healthBar: document.getElementById(`${position}-fighter-indicator`),
   };
 }
