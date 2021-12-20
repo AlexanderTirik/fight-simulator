@@ -1,4 +1,4 @@
-# stage-2-es6-for-everyone
+# fight-simulator
 
 ## Instalation
 
